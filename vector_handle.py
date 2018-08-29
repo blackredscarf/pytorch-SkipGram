@@ -1,3 +1,5 @@
+import argparse
+
 import torch
 from data import read_fromfile
 from model import SkipGramNeg
@@ -55,10 +57,15 @@ def nearest(model, vali_examples, vali_size, id2word_dict, top_k=8):
         print(log_str)
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('--model_path', type=str)
+    parser.add_argument('--output_path', type=str)
+    args = parser.parse_args()
+
     vocabulary_size = 50000
     embedding_size = 300
     data, count, dictionary, reverse_dictionary = read_fromfile()
     model = SkipGramNeg(vocabulary_size, embedding_size).cuda()
-    model.load_state_dict(torch.load('out/sgd-run13/model_step200000'))
+    model.load_state_dict(torch.load(args.model_path))
     wordvec = model_to_vector(model)
-    save_embedding('out/sgd-run13/vector.txt', wordvec, reverse_dictionary)
+    save_embedding(args.output_path, wordvec, reverse_dictionary)

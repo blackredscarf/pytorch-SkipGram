@@ -5,8 +5,6 @@ import random
 import urllib
 import zipfile
 from io import open
-from math import ceil
-
 import numpy as np
 import tensorflow as tf
 
@@ -150,9 +148,15 @@ class DataPipeline:
         return batch, labels
 
 if __name__ == '__main__':
+
+    # use your own data here.
+    # vocabulary = read_own_data(filename)
+
+    # use text8.zip data
     vocabulary_size = 50000
     filename = maybe_download('text8.zip', 31344016)
     vocabulary = read_data(filename)
+
     data, count, dictionary, reverse_dictionary = build_dataset(vocabulary,
                                                                 vocabulary_size)
     print('Most common words (+UNK)', count[:5])

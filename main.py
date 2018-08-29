@@ -4,7 +4,7 @@ from torch.optim import SGD
 from data import read_fromfile, DataPipeline
 from model import SkipGramNeg
 from utils import get_output_folder
-from vector_handle import nearest
+from vector_handle import nearest, model_to_vector, save_embedding
 
 print("read data...")
 data, count, dictionary, reverse_dictionary = read_fromfile()
@@ -17,7 +17,7 @@ embedding_size = 300
 skip_window = 1
 num_skips = 2
 num_neg = 20
-num_steps = 200000
+num_steps = 2
 vali_size = 3
 data_offest = 0
 avg_loss = 0
@@ -61,5 +61,6 @@ for step in range(num_steps):
         torch.save(model.state_dict(), outputdir + '/model_step%d' % step)
 
 torch.save(model.state_dict(), outputdir + '/model_step%d' % num_steps)
-
+wordvec = model_to_vector(model)
+save_embedding(outputdir + '/vector.txt' , wordvec, reverse_dictionary)
 
