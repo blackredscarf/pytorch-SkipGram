@@ -1,4 +1,4 @@
-Using pytorch to implement word2vec algorithm Skip-gram, and refer paper [Distributed Representations of Words and Phrases and their Compositionality](https://arxiv.org/abs/1310.4546v1).
+Using pytorch to implement word2vec algorithm Skip-gram Negative Sampling (SGNS), and refer paper [Distributed Representations of Words and Phrases and their Compositionality](https://arxiv.org/abs/1310.4546v1).
 
 ## dependency
 - pytorch 0.4+
