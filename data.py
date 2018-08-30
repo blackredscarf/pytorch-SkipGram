@@ -8,8 +8,14 @@ from io import open
 import numpy as np
 import tensorflow as tf
 
-url = 'http://mattmahoney.net/dc/'
 def maybe_download(filename, expected_bytes):
+    """
+    download text8.zip
+    :param filename:
+    :param expected_bytes:
+    :return:
+    """
+    url = 'http://mattmahoney.net/dc/'
     if not os.path.exists(filename):
         print('start downloading...')
         filename, _ = urllib.request.urlretrieve(url + filename, filename)
@@ -22,7 +28,12 @@ def maybe_download(filename, expected_bytes):
             'Failed to verify ' + filename + '. Can you get to it with a browser?')
     return filename
 
-def read_data(filename='text8.zip'):
+def read_text8_data(filename='text8.zip'):
+    """
+    tf.compat.as_str() converts both bytes and unicode strings to unicode strings.
+    :param filename:
+    :return:
+    """
     with zipfile.ZipFile(filename) as f:
         data = tf.compat.as_str(f.read(f.namelist()[0])).split()
         print('Data size', len(data))  # 17 million
@@ -30,8 +41,13 @@ def read_data(filename='text8.zip'):
 
 
 def read_own_data(filename):
-    with open(filename, 'r') as f:
-        data = tf.compat.as_str(f.read()).split()
+    """
+    read your own data.
+    :param filename:
+    :return:
+    """
+    with open(filename, 'r', encoding='utf-8') as f:
+        data = f.read().split()
         print('Data size', len(data))
     return data
 
@@ -42,7 +58,7 @@ def build_dataset(words, n_words):
     :param words: corpus
     :param n_words: learn most common n_words
     :return:
-        - data: []
+        - data: [word_index]
         - count: [ [word_index, word_count], ]
         - dictionary: {word_str: word_index}
         - reversed_dictionary: {word_index: word_str}
@@ -79,6 +95,12 @@ def read_fromfile():
     return data, count, dictionary, reversed_dictionary
 
 def noise(vocabs, word_count):
+    """
+    generate noise distribution
+    :param vocabs:
+    :param word_count:
+    :return:
+    """
     Z = 0.001
     unigram_table = []
     num_total_words = sum([c for w, c in word_count])
@@ -149,15 +171,15 @@ class DataPipeline:
 
 if __name__ == '__main__':
 
+    vocabulary_size = 50000
+
     # use your own data here.
-    # vocabulary = read_own_data(filename)
+    # corpus = read_own_data(filename)
 
     # use text8.zip data
-    vocabulary_size = 50000
     filename = maybe_download('text8.zip', 31344016)
-    vocabulary = read_data(filename)
-
-    data, count, dictionary, reverse_dictionary = build_dataset(vocabulary,
+    corpus = read_text8_data(filename)
+    data, count, dictionary, reverse_dictionary = build_dataset(corpus,
                                                                 vocabulary_size)
     print('Most common words (+UNK)', count[:5])
     dataset_tofile(data, count, dictionary, reverse_dictionary)
