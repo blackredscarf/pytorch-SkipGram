@@ -1,11 +1,11 @@
 Using pytorch to implement word2vec algorithm Skip-gram Negative Sampling (SGNS), and refer paper [Distributed Representations of Words and Phrases and their Compositionality](https://arxiv.org/abs/1310.4546v1).
 
-## dependency
+## Dependency
 - python 3.6
 - pytorch 0.4+
 - tensorflow (only use `tf.compat.as_str()`)
 
-## prepare data 
+## Prepare data 
 Run the command:
 ```
 mkdir data
@@ -15,7 +15,7 @@ Default download the [text8.zip](http://mattmahoney.net/dc/text8.zip). The scrip
 
 If you want to use your own data, please use function `read_own_data(filename)` in `data.py`
 
-## train
+## Train
 ```
 mkdir out
 python main.py
@@ -23,7 +23,7 @@ python main.py
 The model and `vector.txt` will save in the `out` folder
 
 
-## evaluate
+## Evaluate
 Refer repository [eval-word-vectors](https://github.com/mfaruqui/eval-word-vectors).
 Like this:
 ```
