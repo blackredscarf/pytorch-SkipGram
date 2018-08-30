@@ -6,21 +6,21 @@ Using pytorch to implement word2vec algorithm Skip-gram Negative Sampling (SGNS)
 - tensorflow (only use `tf.compat.as_str()`)
 
 ## prepare data 
-run the command:
+Run the command:
 ```
 mkdir data
 python data.py
 ```
 Default download the [text8.zip](http://mattmahoney.net/dc/text8.zip). The script will serialize the data to the local.
 
-If you want to use your own data, use function `read_own_data(filename)` in `data.py`
+If you want to use your own data, please use function `read_own_data(filename)` in `data.py`
 
 ## train
 ```
 mkdir out
 python main.py
 ```
-the model and `vector.txt` will save in the `out` folder
+The model and `vector.txt` will save in the `out` folder
 
 
 ## evaluate
