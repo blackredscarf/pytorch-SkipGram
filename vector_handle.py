@@ -1,8 +1,5 @@
-import argparse
-
 import torch
-from data import read_fromfile
-from model import SkipGramNeg
+
 
 def model_to_vector(model, emb_layer_name='input_emb'):
     """
@@ -30,8 +27,7 @@ def save_embedding(file_name, embeddings, id2word):
         line_str = ' '.join(embed_list)
         fo.write(word + ' ' + line_str + '\n')
 
-        if idx % 8000 == 0:
-            print(word)
+    fo.close()
 
 def nearest(model, vali_examples, vali_size, id2word_dict, top_k=8):
     """
@@ -55,17 +51,3 @@ def nearest(model, vali_examples, vali_size, id2word_dict, top_k=8):
             close_word = id2word_dict[nearest[k].item()]
             log_str = '%s %s,' % (log_str, close_word)
         print(log_str)
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='')
-    parser.add_argument('--model_path', type=str)
-    parser.add_argument('--output_path', type=str)
-    args = parser.parse_args()
-
-    vocabulary_size = 50000
-    embedding_size = 300
-    data, count, dictionary, reverse_dictionary = read_fromfile()
-    model = SkipGramNeg(vocabulary_size, embedding_size).cuda()
-    model.load_state_dict(torch.load(args.model_path))
-    wordvec = model_to_vector(model)
-    save_embedding(args.output_path, wordvec, reverse_dictionary)

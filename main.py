@@ -1,66 +1,42 @@
-import random
-import torch
-from torch.optim import SGD
-from data import read_fromfile, DataPipeline
-from model import SkipGramNeg
-from utils import get_output_folder
-from vector_handle import nearest, model_to_vector, save_embedding
+from word2vec import Word2Vec
 
-print("read data...")
-data, count, dictionary, reverse_dictionary = read_fromfile()
-print("corpus size", len(data))
+# init dataset and model
+word2vec = Word2Vec(data_path='text8',
+                    vocabulary_size=50000,
+                    embedding_size=300)
 
-vocabulary_size = 50000
-batch_size = 128
-learning_rate = 1.0
-embedding_size = 300
-skip_window = 1
-num_skips = 2
-num_neg = 20
-num_steps = 200000
-vali_size = 3
-data_offest = 0
-avg_loss = 0
-outputdir = get_output_folder('out', 'sgd')
+# the index of the whole corpus
+print(word2vec.data[:10])
 
-model = SkipGramNeg(vocabulary_size, embedding_size).cuda()
-model_optim = SGD(model.parameters(), lr=learning_rate)
+# word_count like this [['word', word_count], ...]
+# the index of list correspond index of word
+print(word2vec.word_count[:10])
 
-# retrain
-# model.load_state_dict(torch.load("out/sgd-run2/model_step300000"))
-# data_offest = 600000
+# index to word
+print(word2vec.index2word[34])
 
-pipeline = DataPipeline(data, count, data_offest)
-vali_examples = random.sample(data, vali_size)
+# word to index
+print(word2vec.word2index['hello'])
 
-print("train start...")
-for step in range(num_steps):
-    batch_inputs, batch_labels = pipeline.generate_batch(batch_size, num_skips, skip_window)
-    batch_neg = pipeline.get_neg_data(batch_size, num_neg, batch_inputs)
+# load pre-train model
+# word2vec.load_model('out/run-1/model_step200000.pt')
 
-    batch_inputs = torch.tensor(batch_inputs, dtype=torch.long).cuda()
-    batch_labels = torch.tensor(batch_labels, dtype=torch.long).cuda()
-    batch_neg = torch.tensor(batch_neg, dtype=torch.long).cuda()
+# train model
+word2vec.train(train_steps=200000,
+               skip_window=1,
+               num_skips=2,
+               num_neg=20,
+               output_dir='out/run-1')
 
-    loss = model(batch_inputs, batch_labels, batch_neg)
-    model_optim.zero_grad()
-    loss.backward()
-    model_optim.step()
 
-    avg_loss += loss.item()
+# save vector txt file to output_dir
+word2vec.save_vector_txt(path_dir='out/run-1')
 
-    if step % 2000 == 0 and step > 0:
-        avg_loss /= 2000
-        print('Average loss at step ', step, ': ', avg_loss)
-        average_loss = 0
+# get vector list
+vector = word2vec.get_list_vector()
+print(vector[123])
+print(vector[word2vec.word2index['hello']])
 
-    if step % 10000 == 0:
-        nearest(model, vali_examples, vali_size, reverse_dictionary, top_k=8)
-
-    if step % 100000 == 0 and step > 0:
-        torch.save(model.state_dict(), outputdir + '/model_step%d' % step)
-
-torch.save(model.state_dict(), outputdir + '/model_step%d' % num_steps)
-wordvec = model_to_vector(model)
-save_embedding(outputdir + '/vector.txt' , wordvec, reverse_dictionary)
-
+# get top k similar word
+sim_list = word2vec.most_similar('one', top_k=8)
+print(sim_list)

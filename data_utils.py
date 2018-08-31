@@ -3,10 +3,8 @@ import os
 import pickle
 import random
 import urllib
-import zipfile
 from io import open
 import numpy as np
-import tensorflow as tf
 
 def maybe_download(filename, expected_bytes):
     """
@@ -28,17 +26,6 @@ def maybe_download(filename, expected_bytes):
             'Failed to verify ' + filename + '. Can you get to it with a browser?')
     return filename
 
-def read_text8_data(filename='text8.zip'):
-    """
-    tf.compat.as_str() converts both bytes and unicode strings to unicode strings.
-    :param filename:
-    :return:
-    """
-    with zipfile.ZipFile(filename) as f:
-        data = tf.compat.as_str(f.read(f.namelist()[0])).split()
-        print('Data size', len(data))  # 17 million
-    return data
-
 
 def read_own_data(filename):
     """
@@ -46,9 +33,10 @@ def read_own_data(filename):
     :param filename:
     :return:
     """
+    print('reading data...')
     with open(filename, 'r', encoding='utf-8') as f:
         data = f.read().split()
-        print('Data size', len(data))
+    print('corpus size', len(data))
     return data
 
 
@@ -113,10 +101,9 @@ def noise(vocabs, word_count):
 
 
 class DataPipeline:
-    def __init__(self, data, word_count, data_index=0, use_noise_neg=True):
+    def __init__(self, data, vocabs, word_count, data_index=0, use_noise_neg=True):
         self.data = data
         self.data_index = data_index
-        vocabs = list(set(data))
         if use_noise_neg:
             self.unigram_table = noise(vocabs, word_count)
         else:
@@ -168,18 +155,3 @@ class DataPipeline:
             self.data_index = (self.data_index + 1) % len(self.data)
         self.data_index = (self.data_index + len(self.data) - span) % len(self.data)
         return batch, labels
-
-if __name__ == '__main__':
-
-    vocabulary_size = 50000
-
-    # use your own data here.
-    # corpus = read_own_data(filename)
-
-    # use text8.zip data
-    filename = maybe_download('text8.zip', 31344016)
-    corpus = read_text8_data(filename)
-    data, count, dictionary, reverse_dictionary = build_dataset(corpus,
-                                                                vocabulary_size)
-    print('Most common words (+UNK)', count[:5])
-    dataset_tofile(data, count, dictionary, reverse_dictionary)
