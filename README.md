@@ -40,7 +40,7 @@ word2vec.train(train_steps=200000,
                num_neg=20,
                output_dir='out/run-1')
 
-# save vector txt file to output_dir
+# save vector txt file
 word2vec.save_vector_txt(path_dir='out/run-1')
 
 # get vector list
