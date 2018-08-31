@@ -18,9 +18,6 @@ print(word2vec.index2word[34])
 # word to index
 print(word2vec.word2index['hello'])
 
-# load pre-train model
-# word2vec.load_model('out/run-1/model_step200000.pt')
-
 # train model
 word2vec.train(train_steps=200000,
                skip_window=1,
@@ -40,3 +37,6 @@ print(vector[word2vec.word2index['hello']])
 # get top k similar word
 sim_list = word2vec.most_similar('one', top_k=8)
 print(sim_list)
+
+# load pre-train model
+# word2vec.load_model('out/run-1/model_step200000.pt')
